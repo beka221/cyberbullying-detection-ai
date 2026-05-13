@@ -1,0 +1,220 @@
+/* Cyberbullying Detection AI - Styles */
+
+:root {
+    --primary-color: #0d6efd;
+    --danger-color: #dc3545;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+}
+
+.card-header {
+    padding: 1.25rem;
+    font-weight: 600;
+    border: none;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+/* Form Controls */
+.form-control {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Results */
+.result-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    margin: 0.25rem;
+}
+
+.result-badge.bullying {
+    background-color: #dc3545;
+    color: white;
+}
+
+.result-badge.safe {
+    background-color: #198754;
+    color: white;
+}
+
+/* Confidence Bar */
+.confidence-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.confidence-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.confidence-fill.low {
+    background-color: #ffc107;
+    width: 30%;
+}
+
+.confidence-fill.medium {
+    background-color: #fd7e14;
+    width: 60%;
+}
+
+.confidence-fill.high {
+    background-color: #dc3545;
+    width: 90%;
+}
+
+/* Loading Spinner */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    border-top: 2px solid #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .navbar-text {
+        font-size: 0.875rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    .card {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    .form-control {
+        background-color: #3d3d3d;
+        border-color: #5d5d5d;
+        color: #e0e0e0;
+    }
+
+    .form-control:focus {
+        background-color: #4d4d4d;
+        border-color: #0d6efd;
+    }
+}
