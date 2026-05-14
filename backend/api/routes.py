@@ -1,8 +1,3 @@
-"""
-API routes for cyberbullying detection
-API маршруты для обнаружения кибербуллинга
-"""
-
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
@@ -11,32 +6,37 @@ import logging
 
 from database.db import get_db
 from database.models import Analysis
-from models.classifier import CyberbullyingClassifier
+from models.advanced_classifier import AdvancedCyberbullyingClassifier
 from api.schemas import (
     TextAnalysisRequest,
     TextAnalysisResponse,
     AnalysisHistory,
-    StatisticsResponse,
-    HealthResponse
+    StatisticsResponse
 )
 from utils.text_processor import TextProcessor
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-# Initialize classifier and text processor
-classifier = CyberbullyingClassifier()
+# Initialize classifiers for both languages
+classifiers = {
+    'en': AdvancedCyberbullyingClassifier(language='en'),
+    'ru': AdvancedCyberbullyingClassifier(language='ru')
+}
+
 text_processor = TextProcessor()
 
 
-def get_severity(confidence: float) -> str:
-    """Determine severity based on confidence"""
-    if confidence >= 0.8:
-        return "high"
-    elif confidence >= 0.6:
-        return "medium"
-    else:
-        return "low"
+def get_severity_color(severity: str) -> str:
+    """Get color for severity level"""
+    colors = {
+        "critical": "#dc3545",
+        "high": "#fd7e14",
+        "medium": "#ffc107",
+        "low": "#0dcaf0",
+        "none": "#198754"
+    }
+    return colors.get(severity, "#6c757d")
 
 
 @router.post("/analyze", response_model=TextAnalysisResponse)
@@ -44,20 +44,16 @@ async def analyze_text(
     request: TextAnalysisRequest,
     db: Session = Depends(get_db)
 ):
-    """
-    Analyze text for cyberbullying
-    
-    Анализировать текст на наличие кибербуллинга
-    """
+    """Analyze text for cyberbullying with detailed results"""
     try:
-        # Clean and preprocess text
+        # Get classifier for language
+        classifier = classifiers.get(request.language, classifiers['en'])
+        
+        # Clean text
         cleaned_text = text_processor.clean_text(request.text)
         
-        # Get prediction
-        prediction = classifier.predict(cleaned_text)
-        
-        # Determine severity
-        severity = get_severity(prediction['confidence'])
+        # Get prediction with detailed results
+        prediction = classifier.predict(request.text)  # Use original for highlighting
         
         # Save to database
         analysis = Analysis(
@@ -66,7 +62,8 @@ async def analyze_text(
             is_cyberbullying=prediction['is_bullying'],
             label=prediction['label'],
             confidence=prediction['confidence'],
-            severity=severity,
+            severity=prediction['severity'],
+            bullying_words=str(prediction['bullying_words']),
             language=request.language,
             timestamp=datetime.utcnow()
         )
@@ -85,7 +82,11 @@ async def analyze_text(
                 "confidence": prediction['confidence'],
                 "probability": prediction['probabilities']
             },
-            severity=severity,
+            severity=prediction['severity'],
+            severity_color=get_severity_color(prediction['severity']),
+            bullying_words=prediction['bullying_words'],
+            highlighted_text=prediction['highlighted_text'],
+            explanation=generate_explanation(prediction, request.language),
             timestamp=analysis.timestamp
         )
         
@@ -94,23 +95,45 @@ async def analyze_text(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def generate_explanation(prediction: dict, language: str) -> str:
+    """Generate explanation for the prediction"""
+    if not prediction['is_bullying']:
+        return "This text appears to be safe and respectful." if language == 'en' else "Этот текст безопасный и вежливый."
+    
+    label = prediction['label']
+    severity = prediction['severity']
+    word_count = len(prediction['bullying_words'])
+    
+    explanations = {
+        'en': {
+            'Harassment': f"This text contains {word_count} harassment keyword(s) and has {severity} severity. The tone is disrespectful and may cause emotional harm.",
+            'Hate_Speech': f"This text contains hate speech. {word_count} harmful word(s) detected with {severity} severity. This type of content is harmful and unacceptable.",
+            'Threats': f"This text contains threats. {word_count} threatening word(s) detected. This is serious and should be reported.",
+            'Insults': f"This text contains {word_count} insult(s) with {severity} severity. The language is derogatory and offensive.",
+            'Exclusion': f"This text attempts to exclude or alienate. {word_count} exclusionary phrase(s) detected with {severity} severity."
+        },
+        'ru': {
+            'Harassment': f"Текст содержит {word_count} оскорбление(я) с уровнем серьезности {severity}. Тон неуважительный и может причинить вред.",
+            'Hate_Speech': f"Текст содержит речь ненависти. Обнаружено {word_count} вредоносное(ых) слово(а) с уровнем {severity}. Это содержание вредно и неприемлемо.",
+            'Threats': f"Текст содержит угрозы. Обнаружено {word_count} угрожающее(ых) слово(а). Это серьезно и должно быть сообщено.",
+            'Insults': f"Текст содержит {word_count} оскорбление(я) с уровнем {severity}. Язык унизительный и оскорбительный.",
+            'Exclusion': f"Текст пытается исключить или отчуждать. Обнаружено {word_count} исключающее(их) выражение(я) с уровнем {severity}."
+        }
+    }
+    
+    lang_expl = explanations.get(language, explanations['en'])
+    return lang_expl.get(label, "Unable to generate explanation.")
+
+
 @router.get("/history", response_model=List[AnalysisHistory])
 async def get_history(
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
 ):
-    """
-    Get analysis history
-    
-    Получить историю анализов
-    """
+    """Get analysis history"""
     try:
-        analyses = db.query(Analysis)\
-            .order_by(Analysis.timestamp.desc())\
-            .limit(limit)\
-            .offset(offset)\
-            .all()
+        analyses = db.query(Analysis).order_by(Analysis.timestamp.desc()).limit(limit).offset(offset).all()
         
         return [
             AnalysisHistory(
@@ -125,7 +148,7 @@ async def get_history(
             for a in analyses
         ]
     except Exception as e:
-        logger.error(f"History retrieval error: {str(e)}")
+        logger.error(f"History error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -134,26 +157,16 @@ async def get_statistics(
     days: int = Query(7, ge=1, le=365),
     db: Session = Depends(get_db)
 ):
-    """
-    Get statistics for the last N days
-    
-    Получить статистику за последние N дней
-    """
+    """Get statistics"""
     try:
         start_date = datetime.utcnow() - timedelta(days=days)
-        
-        analyses = db.query(Analysis)\
-            .filter(Analysis.timestamp >= start_date)\
-            .all()
+        analyses = db.query(Analysis).filter(Analysis.timestamp >= start_date).all()
         
         if not analyses:
             raise HTTPException(status_code=404, detail="No data found")
         
         total = len(analyses)
         bullying = sum(1 for a in analyses if a.is_cyberbullying)
-        not_bullying = total - bullying
-        
-        avg_confidence = sum(a.confidence for a in analyses) / total if total > 0 else 0
         
         by_category = {}
         by_severity = {}
@@ -162,10 +175,12 @@ async def get_statistics(
             by_category[analysis.label] = by_category.get(analysis.label, 0) + 1
             by_severity[analysis.severity] = by_severity.get(analysis.severity, 0) + 1
         
+        avg_confidence = sum(a.confidence for a in analyses) / total if total > 0 else 0
+        
         return StatisticsResponse(
             total_analyses=total,
             bullying_detected=bullying,
-            not_bullying=not_bullying,
+            not_bullying=total - bullying,
             detection_rate=bullying / total if total > 0 else 0,
             average_confidence=avg_confidence,
             by_category=by_category,
@@ -173,32 +188,8 @@ async def get_statistics(
             timestamp=datetime.utcnow()
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Statistics error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.delete("/history/{analysis_id}")
-async def delete_analysis(
-    analysis_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    Delete analysis from history
-    
-    Удалить анализ из истории
-    """
-    try:
-        analysis = db.query(Analysis).filter(Analysis.id == analysis_id).first()
-        
-        if not analysis:
-            raise HTTPException(status_code=404, detail="Analysis not found")
-        
-        db.delete(analysis)
-        db.commit()
-        
-        return {"message": "Analysis deleted successfully"}
-        
-    except Exception as e:
-        logger.error(f"Delete error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

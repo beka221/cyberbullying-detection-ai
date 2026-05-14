@@ -1,8 +1,3 @@
-"""
-Database ORM models
-Модели ORM для базы данных
-"""
-
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -21,8 +16,9 @@ class Analysis(Base):
     label = Column(String(50), nullable=False)
     confidence = Column(Float, nullable=False)
     severity = Column(String(20), nullable=False)
+    bullying_words = Column(Text, default="")
     language = Column(String(10), default="en")
     timestamp = Column(DateTime, default=datetime.utcnow)
     
     def __repr__(self):
-        return f"<Analysis(id={self.id}, label={self.label}, confidence={self.confidence})>"
+        return f"<Analysis(id={self.id}, label={self.label}, severity={self.severity})>"

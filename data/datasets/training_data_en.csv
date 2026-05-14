@@ -1,0 +1,36 @@
+text,label,category,severity
+"You are so stupid and pathetic",1,harassment,high
+"Go kill yourself right now",1,hate_speech,critical
+"I know where you live and I will find you",1,threats,critical
+"You're an idiot and everyone hates you",1,harassment,high
+"I hate you with all my heart",1,hate_speech,high
+"I will hurt you",1,threats,high
+"Nobody likes you, you should leave",1,harassment,medium
+"You're so annoying, just shut up",1,harassment,medium
+"I despise every inch of you",1,hate_speech,high
+"Watch your back",1,threats,medium
+"You're a loser and always will be",1,harassment,high
+"You disgust me",1,hate_speech,high
+"You will regret this",1,threats,medium
+"Everyone thinks you're weird",1,harassment,medium
+"You don't belong here",1,exclusion,medium
+"Get out of here",1,exclusion,medium
+"You're trash",1,harassment,high
+"I'm going to beat you up",1,threats,high
+"You're ugly and worthless",1,harassment,high
+"I hope something bad happens to you",1,hate_speech,medium
+"Hello, how are you today?",0,normal,none
+"Thanks for your help!",0,normal,none
+"Have a great day!",0,normal,none
+"I really appreciate your kindness",0,normal,none
+"Nice to meet you",0,normal,none
+"See you later, my friend",0,normal,none
+"You did an amazing job",0,normal,none
+"I'm proud of you",0,normal,none
+"Keep up the good work",0,normal,none
+"Congratulations on your achievement",0,normal,none
+"Let's be friends",0,normal,none
+"That's a great idea",0,normal,none
+"How can I help you?",0,normal,none
+"I love spending time with you",0,normal,none
+"You're awesome",0,normal,none

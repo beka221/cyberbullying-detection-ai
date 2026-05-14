@@ -3,73 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyberbullying Detection AI</title>
+    <title>Cyberbullying Detection AI - Diploma Project</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-gradient">
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">
                 <i class="fas fa-shield-alt"></i> Cyberbullying Detection AI
             </span>
-            <span class="navbar-text text-light">
-                🇬🇧 English | 🇷🇺 Русский
-            </span>
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="en">🇬🇧 EN</button>
+                <button class="lang-btn" data-lang="ru">🇷🇺 RU</button>
+            </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row">
-            <!-- Analysis Section -->
+    <div class="container-fluid main-content">
+        <div class="row g-4 mt-2">
+            <!-- Main Analysis Section -->
             <div class="col-lg-8">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white">
+                <!-- Input Card -->
+                <div class="card shadow-lg analysis-card">
+                    <div class="card-header bg-primary">
                         <h5 class="mb-0">
-                            <i class="fas fa-magnifying-glass"></i> Text Analysis / Анализ текста
+                            <i class="fas fa-magnifying-glass"></i>
+                            <span class="label-text">Text Analysis</span>
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="form-group mb-3">
-                            <label for="textInput" class="form-label">
-                                Enter text to analyze / Введите текст для анализа:
+                            <label for="textInput" class="form-label fw-bold">
+                                <span class="label-text">Enter text to analyze:</span>
                             </label>
-                            <textarea
-                                id="textInput"
-                                class="form-control"
-                                rows="5"
-                                placeholder="Type or paste text here.../ Введите или вставьте текст здесь..."
-                            ></textarea>
-                            <small class="form-text text-muted">Max 5000 characters / Макс 5000 символов</small>
+                            <textarea id="textInput" class="form-control" rows="6" placeholder="Type or paste text here..."></textarea>
+                            <small class="form-text text-muted"><span class="label-text">Max 5000 characters</span></small>
                         </div>
-
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
                             <button id="analyzeBtn" class="btn btn-primary btn-lg">
-                                <i class="fas fa-play"></i> Analyze / Анализировать
+                                <i class="fas fa-play"></i> <span class="label-text">Analyze</span>
                             </button>
                             <button id="clearBtn" class="btn btn-secondary btn-lg">
-                                <i class="fas fa-trash"></i> Clear / Очистить
+                                <i class="fas fa-trash"></i> <span class="label-text">Clear</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Results Section -->
-                <div id="resultsSection" class="card shadow-lg mt-4" style="display: none;">
-                    <div class="card-header bg-success text-white">
+                <!-- Results Card -->
+                <div id="resultsSection" class="card shadow-lg analysis-card mt-4" style="display: none;">
+                    <div class="card-header bg-success">
                         <h5 class="mb-0">
-                            <i class="fas fa-check-circle"></i> Analysis Results / Результаты анализа
+                            <i class="fas fa-check-circle"></i>
+                            <span class="label-text">Analysis Results</span>
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div id="resultContent"></div>
+                        <!-- Classification Result -->
+                        <div class="result-section mb-4">
+                            <h6 class="fw-bold"><span class="label-text">Classification:</span></h6>
+                            <div id="resultBadge" class="mb-3"></div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <p><strong><span class="label-text">Category:</span></strong></p>
+                                    <p id="resultLabel" class="text-primary fw-bold"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong><span class="label-text">Confidence:</span></strong></p>
+                                    <p id="resultConfidence" class="fw-bold"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Severity -->
+                        <div class="result-section mb-4">
+                            <h6 class="fw-bold"><span class="label-text">Severity Level:</span></h6>
+                            <div id="severityBadge" class="mb-3"></div>
+                        </div>
+
+                        <!-- Highlighted Text -->
+                        <div class="result-section mb-4">
+                            <h6 class="fw-bold"><span class="label-text">Highlighted Analysis:</span></h6>
+                            <div id="highlightedText" class="highlight-box"></div>
+                        </div>
+
+                        <!-- Bullying Words -->
+                        <div class="result-section mb-4" id="bullyingWordsSection" style="display: none;">
+                            <h6 class="fw-bold"><span class="label-text">Detected Keywords:</span></h6>
+                            <div id="bullyingWordsList" class="row g-2"></div>
+                        </div>
+
+                        <!-- Explanation -->
+                        <div class="result-section">
+                            <h6 class="fw-bold"><span class="label-text">Explanation:</span></h6>
+                            <p id="explanation" class="text-muted"></p>
+                        </div>
+
+                        <!-- Probability Distribution -->
+                        <div class="result-section mt-4">
+                            <h6 class="fw-bold"><span class="label-text">Classification Probabilities:</span></h6>
+                            <div id="probabilityChart" style="height: 300px;">
+                                <canvas id="probChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Error Section -->
                 <div id="errorSection" class="alert alert-danger mt-4" style="display: none;" role="alert">
-                    <strong>Error / Ошибка:</strong>
+                    <strong><span class="label-text">Error:</span></strong>
                     <div id="errorMessage"></div>
                 </div>
             </div>
@@ -77,38 +123,59 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Statistics Card -->
-                <div class="card shadow-lg mb-4">
-                    <div class="card-header bg-info text-white">
+                <div class="card shadow-lg info-card sticky-top" style="top: 20px;">
+                    <div class="card-header bg-info">
                         <h5 class="mb-0">
-                            <i class="fas fa-chart-bar"></i> Statistics / Статистика
+                            <i class="fas fa-chart-bar"></i>
+                            <span class="label-text">Statistics</span>
                         </h5>
                     </div>
                     <div class="card-body" id="statsContent">
-                        <p class="text-muted">Loading...</p>
+                        <div class="stat-item mb-3">
+                            <small class="text-muted"><span class="label-text">Total Analyses:</span></small>
+                            <h4 class="text-primary fw-bold">0</h4>
+                        </div>
+                        <div class="stat-item mb-3">
+                            <small class="text-muted"><span class="label-text">Bullying Detected:</span></small>
+                            <h4 class="text-danger fw-bold">0</h4>
+                        </div>
+                        <div class="stat-item mb-3">
+                            <small class="text-muted"><span class="label-text">Detection Rate:</span></small>
+                            <h4 class="text-warning fw-bold">0%</h4>
+                        </div>
+                        <div class="stat-item">
+                            <small class="text-muted"><span class="label-text">Avg Confidence:</span></small>
+                            <h4 class="text-success fw-bold">0%</h4>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Info Card -->
-                <div class="card shadow-lg">
-                    <div class="card-header bg-warning text-white">
+                <!-- Model Info Card -->
+                <div class="card shadow-lg info-card mt-4">
+                    <div class="card-header bg-warning">
                         <h5 class="mb-0">
-                            <i class="fas fa-info-circle"></i> System Info / Информация о системе
+                            <i class="fas fa-info-circle"></i>
+                            <span class="label-text">Model Information</span>
                         </h5>
                     </div>
                     <div class="card-body">
                         <small>
-                            <p><strong>Models / Модели:</strong></p>
-                            <ul class="mb-2">
-                                <li>Logistic Regression</li>
-                                <li>Random Forest</li>
+                            <p><strong><span class="label-text">Categories:</span></strong></p>
+                            <ul class="mb-3">
+                                <li><span class="label-text">Not Bullying</span></li>
+                                <li><span class="label-text">Harassment</span></li>
+                                <li><span class="label-text">Hate Speech</span></li>
+                                <li><span class="label-text">Insults</span></li>
+                                <li><span class="label-text">Threats</span></li>
+                                <li><span class="label-text">Exclusion</span></li>
                             </ul>
-                            <p><strong>Categories / Категории:</strong></p>
+                            <p><strong><span class="label-text">Severity Levels:</span></strong></p>
                             <ul>
-                                <li>Not Bullying</li>
-                                <li>Harassment</li>
-                                <li>Hate Speech</li>
-                                <li>Insults</li>
-                                <li>Threats</li>
+                                <li>🔴 <span class="label-text">Critical</span></li>
+                                <li>🟠 <span class="label-text">High</span></li>
+                                <li>🟡 <span class="label-text">Medium</span></li>
+                                <li>🔵 <span class="label-text">Low</span></li>
+                                <li>🟢 <span class="label-text">None</span></li>
                             </ul>
                         </small>
                     </div>
@@ -117,12 +184,15 @@
         </div>
     </div>
 
+    <!-- Footer -->
     <footer class="bg-dark text-light text-center py-4 mt-5">
-        <p>Cyberbullying Detection System © 2026 | Diploma Project for 3 Students</p>
+        <p><strong>Cyberbullying Detection AI</strong> © 2026 | <span class="label-text">Diploma Project for 3 Students</span></p>
+        <p class="text-muted"><small><span class="label-text">Built with FastAPI, ML, and Modern Web Technologies</span></small></p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="js/translations.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,36 @@
+text,label,category,severity
+"Ты такой дебил и жалкий",1,harassment,high
+"Сдохни прямо сейчас",1,hate_speech,critical
+"Я знаю где ты живешь и найду тебя",1,threats,critical
+"Ты идиот и все тебя ненавидят",1,harassment,high
+"Я ненавижу тебя всем сердцем",1,hate_speech,high
+"Я тебя ударю",1,threats,high
+"Никто тебя не любит, уходи отсюда",1,harassment,medium
+"Ты такой раздражающий, закрой рот",1,harassment,medium
+"Я тебя презираю",1,hate_speech,high
+"Посмотри в спину",1,threats,medium
+"Ты неудачник и всегда будешь им",1,harassment,high
+"Ты противен мне",1,hate_speech,high
+"Ты пожалеешь об этом",1,threats,medium
+"Все думают что ты странный",1,harassment,medium
+"Тебе здесь не место",1,exclusion,medium
+"Уходи отсюда",1,exclusion,medium
+"Ты гнус",1,harassment,high
+"Я тебя избью",1,threats,high
+"Ты уродлив и ничтожен",1,harassment,high
+"Я надеюсь с тобой что-то плохое случится",1,hate_speech,medium
+"Привет, как твои дела?",0,normal,none
+"Спасибо за помощь!",0,normal,none
+"Хорошего дня!",0,normal,none
+"Я очень ценю твою доброту",0,normal,none
+"Приятно познакомиться",0,normal,none
+"До свидания, мой друг",0,normal,none
+"Ты сделал отличную работу",0,normal,none
+"Я горжусь тобой",0,normal,none
+"Продолжай в том же духе",0,normal,none
+"Поздравляю с достижением",0,normal,none
+"Давай дружить",0,normal,none
+"Это отличная идея",0,normal,none
+"Чем я могу помочь?",0,normal,none
+"Я люблю проводить с тобой время",0,normal,none
+"Ты потрясающий",0,normal,none

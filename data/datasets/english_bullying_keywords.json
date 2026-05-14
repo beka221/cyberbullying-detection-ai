@@ -1,0 +1,28 @@
+{
+  "harassment": [
+    "stupid", "idiot", "dumb", "loser", "pathetic", "worthless", "trash",
+    "ugly", "fat", "weak", "coward", "jerk", "bastard", "asshole", "moron",
+    "retard", "creep", "scumbag", "slut", "whore", "bitch", "asshat",
+    "you suck", "go away", "shut up", "nobody likes you", "everyone hates you"
+  ],
+  "hate_speech": [
+    "kill yourself", "die", "kys", "go kill yourself", "i hate you",
+    "i despise you", "you disgust me", "disgusting", "vile", "abominable",
+    "evil", "wicked", "depraved", "sick", "twisted", "demented", "psychotic"
+  ],
+  "threats": [
+    "i will kill you", "i will hurt you", "i know where you live",
+    "you will regret", "i will find you", "watch your back", "you're done",
+    "you will pay", "just wait", "i will get you", "you better watch out"
+  ],
+  "insults": [
+    "annoying", "boring", "lame", "weird", "strange", "odd", "freak",
+    "nerd", "geek", "loony", "crazy", "insane", "mental", "retarded",
+    "autistic", "down syndrome", "gay" (derogatory), "lesbian" (derogatory)
+  ],
+  "exclusion": [
+    "nobody wants you", "you don't belong here", "get out", "leave",
+    "we don't want you", "you're not welcome", "gtfo", "go away",
+    "nobody cares about you", "you are alone"
+  ]
+}

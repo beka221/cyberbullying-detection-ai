@@ -1,24 +1,33 @@
-"""
-API Request/Response schemas
-Схемы запросов и ответов API
-"""
-
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime
 
 
 class TextAnalysisRequest(BaseModel):
     """Request model for text analysis"""
-    text: str = Field(..., min_length=1, max_length=5000, description="Text to analyze")
-    language: Optional[str] = Field("en", description="Text language (en/ru/kk)")
+    text: str = Field(..., min_length=1, max_length=5000)
+    language: str = Field("en", description="Language: en or ru")
+
+
+class BullyingWord(BaseModel):
+    """Bullying word found in text"""
+    word: str
+    category: str
+    position: int
+
+
+class HighlightedSegment(BaseModel):
+    """Highlighted text segment"""
+    text: str
+    highlight: bool
+    category: Optional[str] = None
 
 
 class ClassificationResult(BaseModel):
     """Classification result"""
-    label: str = Field(..., description="Classification label")
-    confidence: float = Field(..., ge=0, le=1, description="Confidence score")
-    probability: dict = Field(..., description="Probabilities for all classes")
+    label: str
+    confidence: float = Field(..., ge=0, le=1)
+    probability: Dict[str, float]
 
 
 class TextAnalysisResponse(BaseModel):
@@ -27,7 +36,11 @@ class TextAnalysisResponse(BaseModel):
     text: str
     is_cyberbullying: bool
     classification: ClassificationResult
-    severity: Optional[str] = Field(None, description="Severity level: low/medium/high")
+    severity: str
+    severity_color: Optional[str] = None
+    bullying_words: List[BullyingWord] = []
+    highlighted_text: List[HighlightedSegment] = []
+    explanation: str
     timestamp: Optional[datetime] = None
     
     class Config:
@@ -55,13 +68,6 @@ class StatisticsResponse(BaseModel):
     not_bullying: int
     detection_rate: float
     average_confidence: float
-    by_category: dict
-    by_severity: dict
+    by_category: Dict[str, int]
+    by_severity: Dict[str, int]
     timestamp: datetime
-
-
-class HealthResponse(BaseModel):
-    """Health check response"""
-    status: str
-    version: str
-    service: str
